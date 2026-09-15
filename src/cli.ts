@@ -17,11 +17,29 @@ import {
 } from "@wenyan-md/core/wrapper";
 import { getInputContent } from "./utils.js";
 import path from "node:path";
+import { homedir } from "node:os";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import input from "@inquirer/input";
 import password from "@inquirer/password";
 import { loadEnvFile } from "node:process";
 import { resolveApiKey } from "./api-key.js";
+
+/** Load WeChat credentials from env files without keeping secrets in the git repo.
+ * Precedence: explicit --env-file > existing process.env > ~/.env (if present).
+ * Never auto-loads a repo-local .env, so forks stay safe to push to GitHub.
+ */
+function loadCredentialEnv(envFile?: string): void {
+    if (envFile) {
+        loadEnvFile(envFile);
+        return;
+    }
+    const homeEnv = path.join(homedir(), ".env");
+    if (existsSync(homeEnv)) {
+        loadEnvFile(homeEnv);
+    }
+}
+
 
 interface CLIPublishOptions extends ClientPublishOptions {
     apiKeyFile?: string;
@@ -63,14 +81,11 @@ export function createProgram(version: string = pkg.version): Command {
         .option("--server <url>", "Server URL to publish through (e.g. https://api.yourdomain.com)")
         .option("--api-key <apiKey>", "API key for the remote server")
         .option("--api-key-file <path>", "Read the remote server API key from a file")
-        .option("--env-file <file>", "Path to a .env file to load environment variables from")
+        .option("--env-file <file>", "Env file to load (default: ~/.env if it exists; never auto-loads repo .env)")
         .option("--proxy <url>", "Proxy URL to use for requests, ex: http://127.0.0.1:1080")
         .action(async (inputContent: string | undefined, options: CLIPublishOptions) => {
             await runCommandWrapper(async () => {
-                // 读取环境变量文件（如果提供了 --env-file 选项）
-                if (options.envFile) {
-                    loadEnvFile(options.envFile);
-                }
+                loadCredentialEnv(options.envFile);
 
                 // 设置代理（如果提供了 --proxy 选项）
                 await setupProxy(options.proxy);
@@ -149,13 +164,10 @@ export function createProgram(version: string = pkg.version): Command {
         .option("-p, --port <port>", "Port to listen on (default: 3000)", "3000")
         .option("--api-key <apiKey>", "API key for authentication")
         .option("--api-key-file <path>", "Read the API key for authentication from a file")
-        .option("--env-file <file>", "Path to a .env file to load environment variables from")
+        .option("--env-file <file>", "Env file to load (default: ~/.env if it exists; never auto-loads repo .env)")
         .action(async (options: { port?: string; apiKey?: string; apiKeyFile?: string; envFile?: string }) => {
             try {
-                // 读取环境变量文件（如果提供了 --env-file 选项）
-                if (options.envFile) {
-                    loadEnvFile(options.envFile);
-                }
+                loadCredentialEnv(options.envFile);
                 const { serveCommand } = await import("./commands/serve.js");
                 const port = options.port ? parseInt(options.port, 10) : 3000;
                 await serveCommand({ port, version, apiKey: options.apiKey, apiKeyFile: options.apiKeyFile });

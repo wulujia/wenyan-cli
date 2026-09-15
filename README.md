@@ -28,15 +28,18 @@ pnpm install
 pnpm build
 # or: npm install -g .   after build
 
-export WECHAT_APP_ID=...
-export WECHAT_APP_SECRET=...
+# Put secrets in your HOME file (NOT in this repo):
+# ~/.env
+WECHAT_APP_ID=wx...
+WECHAT_APP_SECRET=...
+
 # IP whitelist your machine (or use --server / --proxy)
 
-./dist/cli.js publish -f article.md
-# after link: wenyan publish -f article.md
+wenyan publish -f article.md
+# auto-loads ~/.env; override with --env-file /other/path
 ```
 
-Prefer `--env-file=.env` over interactive `credential --set` when an Agent runs the CLI.
+**Do not commit secrets.** This fork defaults to `~/.env` so the git working tree stays pushable. Repo-local `.env` is gitignored and is **not** auto-loaded.
 
 ## Commands
 
@@ -65,7 +68,7 @@ Body in Markdown. Local `./img.png` and https images are uploaded automatically.
 ## Agent notes
 
 - Default target is **草稿箱**; review in mp.weixin.qq.com before 发表
-- Non-interactive: set `WECHAT_APP_ID` / `WECHAT_APP_SECRET` (or `--env-file`)
+- Non-interactive: put `WECHAT_APP_ID` / `WECHAT_APP_SECRET` in `~/.env` (or pass `--env-file`)
 - Add M2 (or server) public IP to the WeChat IP whitelist
 - Planned fork work: JSON output, dry-run / `--confirm`, stronger “find images” helpers
 
