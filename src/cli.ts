@@ -45,6 +45,7 @@ interface CLIPublishOptions extends ClientPublishOptions {
     apiKeyFile?: string;
     proxy?: string;
     envFile?: string;
+    noAutoCover?: boolean;
 }
 
 export function createProgram(version: string = pkg.version): Command {
@@ -83,6 +84,7 @@ export function createProgram(version: string = pkg.version): Command {
         .option("--api-key-file <path>", "Read the remote server API key from a file")
         .option("--env-file <file>", "Env file to load (default: ~/.env if it exists; never auto-loads repo .env)")
         .option("--proxy <url>", "Proxy URL to use for requests, ex: http://127.0.0.1:1080")
+        .option("--no-auto-cover", "Do not auto-pick a landscape oil painting when cover is missing")
         .action(async (inputContent: string | undefined, options: CLIPublishOptions) => {
             await runCommandWrapper(async () => {
                 loadCredentialEnv(options.envFile);
@@ -95,11 +97,15 @@ export function createProgram(version: string = pkg.version): Command {
                     options.apiKey = await resolveApiKey(options);
                     delete options.apiKeyFile;
                     options.clientVersion = version; // 将 CLI 版本传递给服务器，便于调试和兼容性处理
-                    const mediaId = await renderAndPublishToServer(inputContent, options, getPublishInputContent);
+                    const getInput = (c?: string, f?: string) =>
+                        getPublishInputContent(c, f, { autoCoverArt: !options.noAutoCover });
+                    const mediaId = await renderAndPublishToServer(inputContent, options, getInput);
                     console.log(`发布成功，Media ID: ${mediaId}`);
                 } else {
                     // 走原有的本地直接发布模式
-                    const mediaId = await renderAndPublish(inputContent, options, getPublishInputContent);
+                    const getInput = (c?: string, f?: string) =>
+                        getPublishInputContent(c, f, { autoCoverArt: !options.noAutoCover });
+                    const mediaId = await renderAndPublish(inputContent, options, getInput);
                     console.log(`发布成功，Media ID: ${mediaId}`);
                 }
             });

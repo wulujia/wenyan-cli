@@ -16,6 +16,7 @@ Upstream still powers rendering via `@wenyan-md/core`. This repo is the thin CLI
 
 - Publish Markdown to WeChat **draft box** (not mass-send)
 - Upload local / relative / remote images and cover
+- If `cover` is omitted on publish, auto-pick a **public-domain landscape oil painting** and append an artwork credit line (disable with `--no-auto-cover`)
 - Themes + custom CSS
 - Optional `serve` mode (remote publish to dodge home IP whitelist churn)
 - Env-based credentials for non-interactive Agent runs
@@ -57,7 +58,7 @@ wenyan publish -f article.md
 ```md
 ---
 title: Article title
-cover: ./cover.jpg   # optional if body has images
+cover: ./cover.jpg   # optional; if omitted, a landscape oil painting is chosen automatically
 author: Luca
 source_url: https://wlj.me/...
 ---

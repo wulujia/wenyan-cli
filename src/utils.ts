@@ -1,6 +1,7 @@
 import path from "node:path";
 import fs from "node:fs/promises";
 import { getNormalizeFilePath } from "@wenyan-md/core/wrapper";
+import { ensureLandscapeCoverArt } from "./cover-art.js";
 
 export function readStdin(): Promise<string> {
     process.stdin.setEncoding("utf8"); // windows中文版可能有问题
@@ -85,10 +86,18 @@ export function stripDuplicateTitleHeading(markdown: string): string {
 export async function getPublishInputContent(
     inputContent?: string,
     file?: string,
-): Promise<{ content: string; absoluteDirPath: string | undefined }> {
+    options: { autoCoverArt?: boolean } = {},
+): Promise<{ content: string; absoluteDirPath: string | undefined; coverArtId?: string }> {
     const result = await getInputContent(inputContent, file);
+    let content = stripDuplicateTitleHeading(result.content);
+    const autoCoverArt = options.autoCoverArt !== false && process.env.WENYAN_NO_AUTO_COVER !== "1";
+    const { markdown, art } = ensureLandscapeCoverArt(content, { enabled: autoCoverArt });
+    if (art) {
+        console.error(`[cover-art] ${art.artistZh}《${art.titleZh}》 (${art.id})`);
+    }
     return {
         ...result,
-        content: stripDuplicateTitleHeading(result.content),
+        content: markdown,
+        coverArtId: art?.id,
     };
 }
