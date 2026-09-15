@@ -2,7 +2,7 @@ import { describe, it, mock, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
 import fs from "node:fs/promises";
-import { getInputContent, readStdin } from "../src/utils.js";
+import { getInputContent, getPublishInputContent, readStdin, stripDuplicateTitleHeading } from "../src/utils.js";
 import { PassThrough } from "node:stream";
 import os from "node:os";
 
@@ -133,5 +133,46 @@ describe("utils.ts", () => {
             testError.code = "ENOENT";
             await assert.rejects(promise, testError);
         });
+    });
+});
+
+
+describe("stripDuplicateTitleHeading", () => {
+    it("removes leading H1 matching frontmatter title", () => {
+        const md = `---
+title: 一个人训一个小模型：实操清单
+author: Luca
+---
+
+# 一个人训一个小模型：实操清单
+
+材料来自 42 章经
+`;
+        const out = stripDuplicateTitleHeading(md);
+        assert.match(out, /title: 一个人训一个小模型：实操清单/);
+        assert.doesNotMatch(out, /^# 一个人训一个小模型/m);
+        assert.match(out, /材料来自 42 章经/);
+    });
+
+    it("keeps H1 when it differs from frontmatter title", () => {
+        const md = `---
+title: Outer title
+---
+
+# Different heading
+
+body
+`;
+        const out = stripDuplicateTitleHeading(md);
+        assert.match(out, /# Different heading/);
+    });
+
+    it("removes first H1 when frontmatter has no title", () => {
+        const md = `# Only heading
+
+body
+`;
+        const out = stripDuplicateTitleHeading(md);
+        assert.equal(out.trimStart(), "body\n");
     });
 });

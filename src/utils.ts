@@ -42,3 +42,53 @@ export async function getInputContent(
 
     throw new Error("missing input-content (no argument, no stdin, and no file).");
 }
+
+
+/**
+ * WeChat already shows frontmatter `title` above the article.
+ * Strip a leading ATX H1 from the body when it duplicates that title
+ * (or when there is no frontmatter title — first H1 after frontmatter).
+ */
+export function stripDuplicateTitleHeading(markdown: string): string {
+    const normalized = (s: string) => s.trim().replace(/^["']|["']$/g, "").replace(/\s+/g, " ");
+
+    const fmMatch = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+    let title: string | undefined;
+    let bodyStart = 0;
+    let fmBlock = "";
+
+    if (fmMatch) {
+        fmBlock = fmMatch[0];
+        bodyStart = fmMatch[0].length;
+        const titleLine = fmMatch[1].match(/^title:\s*(.+)$/m);
+        if (titleLine) {
+            title = normalized(titleLine[1]);
+        }
+    }
+
+    const body = markdown.slice(bodyStart);
+    const h1Match = body.match(/^\s*#\s+(.+?)\s*(?:\r?\n|$)/);
+    if (!h1Match) {
+        return markdown;
+    }
+
+    const h1Text = normalized(h1Match[1]);
+    if (title && h1Text !== title) {
+        return markdown;
+    }
+
+    let rest = body.slice(h1Match[0].length);
+    rest = rest.replace(/^\s*\r?\n/, "");
+    return fmBlock ? `${fmBlock.replace(/\s*$/, "")}\n\n${rest}` : rest;
+}
+
+export async function getPublishInputContent(
+    inputContent?: string,
+    file?: string,
+): Promise<{ content: string; absoluteDirPath: string | undefined }> {
+    const result = await getInputContent(inputContent, file);
+    return {
+        ...result,
+        content: stripDuplicateTitleHeading(result.content),
+    };
+}

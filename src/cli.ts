@@ -15,7 +15,7 @@ import {
     credentialStore,
     wechatPublisher,
 } from "@wenyan-md/core/wrapper";
-import { getInputContent } from "./utils.js";
+import { getInputContent, getPublishInputContent } from "./utils.js";
 import path from "node:path";
 import { homedir } from "node:os";
 import { existsSync } from "node:fs";
@@ -95,11 +95,11 @@ export function createProgram(version: string = pkg.version): Command {
                     options.apiKey = await resolveApiKey(options);
                     delete options.apiKeyFile;
                     options.clientVersion = version; // 将 CLI 版本传递给服务器，便于调试和兼容性处理
-                    const mediaId = await renderAndPublishToServer(inputContent, options, getInputContent);
+                    const mediaId = await renderAndPublishToServer(inputContent, options, getPublishInputContent);
                     console.log(`发布成功，Media ID: ${mediaId}`);
                 } else {
                     // 走原有的本地直接发布模式
-                    const mediaId = await renderAndPublish(inputContent, options, getInputContent);
+                    const mediaId = await renderAndPublish(inputContent, options, getPublishInputContent);
                     console.log(`发布成功，Media ID: ${mediaId}`);
                 }
             });
