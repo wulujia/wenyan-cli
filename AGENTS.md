@@ -1,5 +1,9 @@
 # AGENTS.md
 
+This is **wulujia/wenyan-cli**, a fork of caol64/wenyan-cli scoped to **CLI + WeChat 草稿箱** for Agents.
+
+Out of scope in this fork: GUI/desktop apps, MCP servers, 知乎/今日头条 product packaging.
+
 ## Build, test, and lint
 
 - Use `pnpm` for all package management and repo scripts.
