@@ -41,6 +41,31 @@ function loadCredentialEnv(envFile?: string): void {
 }
 
 
+/** Package root (parent of dist/) so bundled themes resolve after global install. */
+function packageRoot(): string {
+    return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+}
+
+/** Fork default: body 18px theme shipped at themes/luca-readable.css.
+ * If -t luca-readable (the default) and no -c, point customTheme at the bundled CSS
+ * so publish/render work without a prior `wenyan theme --add`.
+ */
+function applyForkDefaultTheme<T extends { theme?: string; customTheme?: string }>(options: T): T {
+    if (options.customTheme) {
+        return options;
+    }
+    const theme = options.theme ?? "luca-readable";
+    if (theme === "luca-readable") {
+        const cssPath = path.join(packageRoot(), "themes", "luca-readable.css");
+        if (existsSync(cssPath)) {
+            options.customTheme = cssPath;
+        }
+    }
+    return options;
+}
+
+
+
 interface CLIPublishOptions extends ClientPublishOptions {
     apiKeyFile?: string;
     proxy?: string;
@@ -63,7 +88,7 @@ export function createProgram(version: string = pkg.version): Command {
         return cmd
             .argument("[input-content]", "markdown content (string input)")
             .option("-f, --file <path>", "read markdown content from local file or web URL")
-            .option("-t, --theme <theme-id>", "ID of the theme to use", "default")
+            .option("-t, --theme <theme-id>", "ID of the theme to use (fork default: luca-readable)", "luca-readable")
             .option("-h, --highlight <highlight-theme-id>", "ID of the code highlight theme to use", "solarized-light")
             .option("-c, --custom-theme <path>", "path to custom theme CSS file")
             .option("--mac-style", "display codeblock with mac style", true)
@@ -88,6 +113,7 @@ export function createProgram(version: string = pkg.version): Command {
         .action(async (inputContent: string | undefined, options: CLIPublishOptions) => {
             await runCommandWrapper(async () => {
                 loadCredentialEnv(options.envFile);
+                applyForkDefaultTheme(options);
 
                 // 设置代理（如果提供了 --proxy 选项）
                 await setupProxy(options.proxy);
@@ -115,6 +141,7 @@ export function createProgram(version: string = pkg.version): Command {
 
     addCommonOptions(renderCmd).action(async (inputContent: string | undefined, options: RenderOptions) => {
         await runCommandWrapper(async () => {
+            applyForkDefaultTheme(options);
             const { gzhContent } = await prepareRenderContext(inputContent, options, getInputContent);
             console.log(gzhContent.content);
         });

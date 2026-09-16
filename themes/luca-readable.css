@@ -1,0 +1,198 @@
+/* luca-readable: fork default for long-form WeChat drafts.
+ * Body 18px / line-height 1.8 (upstream default was 16px / 1.75).
+ * Headings stay relative (em) to body.
+ */
+/**
+ * æ¬¢è¿ä½¿ç¨èªå®ä¹ä¸»é¢åè½ï¼ä½¿ç¨æç¨ï¼
+ * https://babyno.top/posts/2024/11/wenyan-supports-customized-themes/
+ */
+/* å¨å±å±æ§ */
+#wenyan {
+    line-height: 1.8;
+    font-size: 18px;
+}
+/* å¨å±å­åç´ å±æ§ */
+/* æ¯æåç» */
+#wenyan h1,
+#wenyan h2,
+#wenyan h3,
+#wenyan h4,
+#wenyan h5,
+#wenyan h6,
+#wenyan p {
+    margin: 1em 0;
+}
+/* æ®µè½ */
+#wenyan p {
+    font-size: 18px;
+}
+/* å ç² */
+#wenyan p strong {
+}
+/* æä½ */
+#wenyan p em {
+}
+/* ä¸çº§æ é¢ */
+#wenyan h1 {
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1.5em;
+}
+/* æ é¢æå­ */
+#wenyan h1 span {
+}
+/* æ é¢åç¼ï¼h1-h6é½æ¯æåç¼ */
+#wenyan h1::before {
+}
+/* æ é¢åç¼ï¼h1-h6é½æ¯æåç¼ */
+#wenyan h1::after {
+}
+/* äºçº§æ é¢ */
+#wenyan h2 {
+    text-align: center;
+    font-size: 1.2em;
+    border-bottom: 1px solid #f7f7f7;
+    font-weight: bold;
+}
+/* ä¸-å­çº§æ é¢ */
+#wenyan h3,
+#wenyan h4,
+#wenyan h5,
+#wenyan h6 {
+    font-size: 1em;
+    font-weight: bold;
+}
+/* åè¡¨ */
+#wenyan > ul,
+#wenyan > ol {
+    padding-left: 1rem;
+}
+#wenyan ul,
+#wenyan ol {
+    margin-left: 1rem;
+    font-size: 1rem;
+}
+#wenyan ul {
+    list-style-type: disc;
+}
+#wenyan ul ul {
+    list-style-type: circle;
+}
+#wenyan ol {
+    list-style-type: decimal;
+}
+/* åè¡¨åç´  */
+#wenyan li {
+}
+/* å¾ç */
+#wenyan img {
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
+/* è¡¨æ ¼ */
+#wenyan table {
+    border-collapse: collapse;
+    margin: 1.4em auto;
+    max-width: 100%;
+    table-layout: fixed;
+    text-align: left;
+    overflow: auto;
+    display: table;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+/* è¡¨æ ¼ååæ ¼ */
+#wenyan table td,
+#wenyan table th {
+    font-size: 0.75em;
+    padding: 9px 12px;
+    line-height: 22px;
+    color: #222;
+    border: 1px solid #d8d8d8;
+    vertical-align: top;
+}
+/* è¡¨æ ¼è¡¨å¤´ */
+#wenyan table th {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
+/* è¡¨æ ¼æé©¬æ¡çº¹ææ */
+#wenyan table tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+#wenyan table tr:nth-child(odd) {
+    background-color: #fff;
+}
+/* å¼ç¨å */
+#wenyan blockquote {
+    background: #afb8c133;
+    border-left: 0.5em solid #ccc;
+    margin: 1.5em 0;
+    padding: 0.5em 10px;
+    font-style: italic;
+    font-size: 0.9em;
+}
+/* å¼ç¨ååç¼ */
+#wenyan blockquote::before {
+}
+/* å¼ç¨ååç¼ */
+#wenyan blockquote::after {
+}
+/* è¡åä»£ç  */
+#wenyan p code {
+    color: #ff502c;
+    padding: 4px 6px;
+    font-size: 0.78em;
+}
+/* ä»£ç åå¤å´ */
+#wenyan pre {
+    border-radius: 5px;
+    line-height: 2;
+    margin: 1em 0.5em;
+    padding: .5em;
+    box-shadow: rgba(0, 0, 0, 0.55) 0px 1px 5px;
+    font-size: 12px;
+}
+/* ä»£ç å */
+#wenyan pre code {
+    display: block;
+    overflow-x: auto;
+    margin: .5em;
+    padding: 0;
+}
+/* åå²çº¿ */
+#wenyan hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+/* é¾æ¥ */
+#wenyan a {
+    word-wrap: break-word;
+    color: #0069c2;
+}
+/* åå§é¾æ¥æèæ³¨ä¸æ  */
+#wenyan .footnote {
+    color: #0069c2;
+}
+/* èæ³¨è¡ */
+#wenyan #footnotes p {
+    display: flex;
+    margin: 0;
+    font-size: 0.9em;
+}
+/* èæ³¨è¡åç¼å· */
+#wenyan .footnote-num {
+    display: inline;
+    width: 10%;
+}
+/* èæ³¨è¡åæå­ */
+#wenyan .footnote-txt {
+    display: inline;
+    width: 90%;
+    word-wrap: break-word;
+    word-break: break-all;
+}

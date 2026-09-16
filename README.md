@@ -38,6 +38,7 @@ WECHAT_APP_SECRET=...
 
 wenyan publish -f article.md
 # auto-loads ~/.env; override with --env-file /other/path
+# fork default theme: luca-readable (body 18px). Use -t default for upstream size.
 ```
 
 **Do not commit secrets.** This fork defaults to `~/.env` so the git working tree stays pushable. Repo-local `.env` is gitignored and is **not** auto-loaded.

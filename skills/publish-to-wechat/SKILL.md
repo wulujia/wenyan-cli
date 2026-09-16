@@ -37,7 +37,7 @@ source_url: https://example.com/original-article # 可选，原文链接
 ### 核心参数说明
 
 - `-f, --file`：**(必填)** Markdown 文件路径。
-- `-t, --theme`：排版主题（默认 `default`）。
+- `-t, --theme`：排版主题（本 fork 默认 `luca-readable`，正文 18px；上游内置 `default` 为 16px）。
 - `-h, --highlight`：代码高亮主题（默认 `solarized-light`）。
 - `--no-mac-style`：禁用代码块 Mac 风格。
 
@@ -46,6 +46,7 @@ source_url: https://example.com/original-article # 可选，原文链接
 ### 1. 标准发布 (使用默认配置)
 ```bash
 wenyan publish -f my-article.md
+# 默认 luca-readable；改字号只改 themes/luca-readable.css 并 push，勿重发已发表文章
 ```
 
 ### 2. 指定内置主题与高亮发布
