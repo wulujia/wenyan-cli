@@ -1,5 +1,6 @@
 import { describe, it, mock, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { createProgram } from "../src/cli.js";
 
 describe("CLI Argument Parsing", () => {
@@ -52,6 +53,45 @@ describe("CLI Argument Parsing", () => {
         const publishCommand = program.commands.find((cmd) => cmd.name() === "publish");
 
         assert.ok(publishCommand?.options.some((option) => option.long === "--api-key-file"));
+    });
+
+    it("should honor auto-cover options for local and remote publishing", () => {
+        execFileSync(process.execPath, [
+            "--experimental-test-module-mocks", "--import", "tsx", "--input-type=module", "-e",
+            `
+            import { mock } from "node:test";
+            import assert from "node:assert/strict";
+            import * as core from "@wenyan-md/core/wrapper";
+            const inputs = [];
+            const publish = (route) => async (content, options, getInput) => {
+                inputs.push({ route, ...await getInput(content) });
+                return "test-media-id";
+            };
+            mock.module("@wenyan-md/core/wrapper", { namedExports: {
+                ...core,
+                renderAndPublish: publish("local"),
+                renderAndPublishToServer: publish("remote"),
+            } });
+            const { createProgram } = await import("./src/cli.ts");
+            delete process.env.WENYAN_NO_AUTO_COVER;
+            const markdown = "---\\ntitle: Test\\n---\\n\\nBody\\n";
+            for (const route of ["local", "remote"]) {
+                for (const disabled of [false, true]) {
+                    const args = ["node", "wenyan", "publish", "--env-file", "/dev/null"];
+                    if (route === "remote") args.push("--server", "https://example.invalid", "--api-key", "test-key");
+                    if (disabled) args.push("--no-auto-cover");
+                    args.push("--", markdown);
+                    await createProgram().parseAsync(args);
+                    const result = inputs.at(-1);
+                    assert.equal(result.route, route);
+                    assert.equal(Boolean(result.coverArtId), !disabled, route + ": auto cover");
+                    if (disabled) assert.equal(result.content, markdown);
+                    else assert.match(result.content, /^cover: https:/m);
+                }
+            }
+            assert.equal(inputs.length, 4);
+            `,
+        ], { cwd: new URL("..", import.meta.url), stdio: "pipe" });
     });
 
     it("should have credential command", () => {

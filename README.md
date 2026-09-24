@@ -69,6 +69,8 @@ Body in Markdown. Local `./img.png` and https images are uploaded automatically.
 
 ## Agent notes
 
+- 为文章选择封面和正文装饰性配图时，每次优先搜索优美的风景油画，查看实图并核对来源、许可，再填写图片路径和署名。用户指定图片及说明事实的截图、图表保留。完整流程见 [公众号发布规则](skills/publish-to-wechat/SKILL.md)。
+- CLI 不执行图片搜索；缺少封面时才从内置的 10 幅油画中选择备用封面。`--no-auto-cover` 或 `WENYAN_NO_AUTO_COVER=1` 可关闭备用选择。
 - Default target is **草稿箱**; review in mp.weixin.qq.com before 发表
 - Non-interactive: put `WECHAT_APP_ID` / `WECHAT_APP_SECRET` in `~/.env` (or pass `--env-file`)
 - Add M2 (or server) public IP to the WeChat IP whitelist

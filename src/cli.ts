@@ -70,7 +70,7 @@ interface CLIPublishOptions extends ClientPublishOptions {
     apiKeyFile?: string;
     proxy?: string;
     envFile?: string;
-    noAutoCover?: boolean;
+    autoCover?: boolean;
 }
 
 export function createProgram(version: string = pkg.version): Command {
@@ -124,13 +124,13 @@ export function createProgram(version: string = pkg.version): Command {
                     delete options.apiKeyFile;
                     options.clientVersion = version; // 将 CLI 版本传递给服务器，便于调试和兼容性处理
                     const getInput = (c?: string, f?: string) =>
-                        getPublishInputContent(c, f, { autoCoverArt: !options.noAutoCover });
+                        getPublishInputContent(c, f, { autoCoverArt: options.autoCover });
                     const mediaId = await renderAndPublishToServer(inputContent, options, getInput);
                     console.log(`发布成功，Media ID: ${mediaId}`);
                 } else {
                     // 走原有的本地直接发布模式
                     const getInput = (c?: string, f?: string) =>
-                        getPublishInputContent(c, f, { autoCoverArt: !options.noAutoCover });
+                        getPublishInputContent(c, f, { autoCoverArt: options.autoCover });
                     const mediaId = await renderAndPublish(inputContent, options, getInput);
                     console.log(`发布成功，Media ID: ${mediaId}`);
                 }
